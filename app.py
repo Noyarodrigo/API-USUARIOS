@@ -34,9 +34,13 @@ class Productos(db.Model):
 
 class Facturas(db.Model):
     FacturaID = db.Column(db.Integer, primary_key=True)
-    Fecha = db.Column(db.DateTime, nullable=False)
+    FechaPago = db.Column(db.DateTime, nullable=False)
+    MetodoPago = db.Column(db.String(), nullable=False)
+    Descripcion = db.Column(db.String(), nullable=False)
     ClienteID = db.Column(db.Integer(),db.ForeignKey('usuarios.ClienteID'))
-    cliente_id = db.relationship('Usuarios',foreign_keys=ClienteID, backref='usuarios')
+    cliente_id = db.relationship('Usuarios',foreign_keys=ClienteID, backref='Facturas')
+    ProductoID = db.Column(db.Integer(),db.ForeignKey('productos.ProductoID'))
+    producto_id = db.relationship('Productos',foreign_keys=FacturaID, backref='Productos')
 
 class Admins(db.Model):
     AdminID = db.Column(db.Integer, primary_key=True)
@@ -152,23 +156,28 @@ def get_payment():
 #buscar todas las factuas
 @app.route('/factura',methods=['GET'])
 def get_all_bills():
-    bills = Facturas.query.all()
+    #bills = Facturas.query.all()
 
+    bills = db.session.query(Facturas.FacturaID, Usuarios.ClienteID, Usuarios.Nombre, Usuarios.Apellido, Facturas.Descripcion,Facturas.MetodoPago,Facturas.FechaPago)\
+            .filter(Facturas.ClienteID == Usuarios.ClienteID)\
+            .all()
     output = []
     for bill in bills:
         bill_data = {}
-        bill_data['ID'] = bill.ClienteID
+        bill_data['ClienteID'] = bill.ClienteID
+        bill_data['FacturaID'] = bill.FacturaID
         bill_data['Nombre'] = bill.Nombre
         bill_data['Apellido'] = bill.Apellido
-        bill_data['Direccion'] = bill.Direccion
+        bill_data['Descripcion'] = bill.Descripcion
+        bill_data['MetodoPago'] = bill.MetodoPago
+        bill_data['FechaPago'] = bill.FechaPago
         output.append(bill_data)
-
-    return jsonify({'usuarios' : output})
+    return jsonify({'bills' : output})
 
 #buscar una factura
 @app.route('/factura/<id>',methods=['GET'])
 def get_one_bill(id):
-    bill = db.session.query(Facturas.FacturaID, Usuarios.Nombre, Usuarios.Apellido, Facturas.Descripcion,Facturas.MetodoPago,Facturas.FechaPago)\
+    bill = db.session.query(Facturas.FacturaID, Usuarios.ClienteID, Usuarios.Nombre, Usuarios.Apellido, Facturas.Descripcion,Facturas.MetodoPago,Facturas.FechaPago)\
             .filter(Facturas.FacturaID == id)\
             .filter(Facturas.ClienteID == Usuarios.ClienteID)\
             .first()
@@ -177,7 +186,8 @@ def get_one_bill(id):
         return jsonify({'message':'Factura no encontrada'})
 
     bill_data = {}
-    bill_data['ID'] = bill.ClienteID
+    bill_data['ClienteID'] = bill.ClienteID
+    bill_data['FacturaID'] = bill.FacturaID
     bill_data['Nombre'] = bill.Nombre
     bill_data['Apellido'] = bill.Apellido
     bill_data['Descripcion'] = bill.Descripcion
@@ -189,10 +199,15 @@ def get_one_bill(id):
 @app.route('/factura',methods=['POST'])
 def create_bill():
     data = request.get_json()
+    #check if user exist
+    user = Usuarios.query.filter_by(ClienteID=data['Cliente']).first()
+    if not user:
+        return jsonify({'message':'No existe el usuario'})
+
     new_bill = Facturas(ClienteID= data['Cliente'], Descripcion= data['Descripcion'], MetodoPago= data['MetodoPago'], FechaPago=data['FechaPago'])
     db.session.add(new_bill)
     db.session.commit()
-    return jsonify({'message':'factura agregado'})
+    return jsonify({'message':'factura agregada'})
 
 #modificar factura
 @app.route('/factura/<id>',methods=['PUT'])
@@ -201,33 +216,29 @@ def alter_bill(id):
     if not bill:
         return jsonify({'message':'No existe la factura'})
     args = request.args
-    if 'Nombre' in args:
-        user.Nombre = args['Nombre']
-    if 'Apellido' in args:
-        user.Apellido = args['Apellido']
-    if 'Direccion' in args:
-        user.Direccion = args['Direccion']
-    if 'ProductoID' in args:
-        user.ProductoID = args['ProductoID']
+    if 'Cliente' in args:
+        bill.ClienteID = args['Cliente']
+    if 'Descripcion' in args:
+        bill.Descripcion = args['Descripcion']
+    if 'MetodoPago' in args:
+        bill.MetodoPago = args['MetodoPago']
     if 'FechaPago' in args:
-        user.FechaPago = args['FechaPago']
-    if 'Password' in args:
-        user.Password = args['Password']
-    if 'Matricula' in args:
-        user.Matricula = args['Matricula']
+        bill.FechaPago = args['FechaPago']
+    if 'Producto' in args:
+        bill.ProductoID = args['Producto']
     db.session.commit()
 
-    return jsonify({'message':'Modificado correctamente'})
+    return jsonify({'message':'Factura modificada correctamente'})
 
 #eliminar factura
 @app.route('/facturas/<id>',methods=['DELETE'])
 def delete_facturas(id):
-    user = Facturas.query.filter_by(ClienteID=id).first()
-    if not user:
-        return jsonify({'message':'No existe el factura'})
-    db.session.delete(user)
+    bill = Facturas.query.filter_by(FacturaID=id).first()
+    if not bill:
+        return jsonify({'message':'No existe la factura'})
+    db.session.delete(bill)
     db.session.commit()
-    return jsonify({'message':'Usuario eliminado'})
+    return jsonify({'message':'Factura eliminada'})
 
 if __name__ == '__main__':
     app.run(debug=True)
