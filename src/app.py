@@ -1,3 +1,4 @@
+import os
 from flask import Flask, request, jsonify, make_response
 from flask_sqlalchemy import SQLAlchemy
 import uuid
@@ -40,7 +41,7 @@ class Facturas(db.Model):
     ClienteID = db.Column(db.Integer(),db.ForeignKey('usuarios.ClienteID'))
     cliente_id = db.relationship('Usuarios',foreign_keys=ClienteID, backref='Facturas')
     ProductoID = db.Column(db.Integer(),db.ForeignKey('productos.ProductoID'))
-    producto_id = db.relationship('Productos',foreign_keys=FacturaID, backref='Productos')
+    producto_id = db.relationship('Productos',foreign_keys=ProductoID, backref='Facturas')
 
 class Admins(db.Model):
     AdminID = db.Column(db.Integer, primary_key=True)
@@ -132,7 +133,7 @@ def delete_user(id):
 
 #-------  API pago/login -------
 #buscar fecha pago
-@app.route('/login/',methods=['POST'])
+@app.route('/login',methods=['POST'])
 def get_payment():
     data = request.get_json()
 
@@ -148,7 +149,7 @@ def get_payment():
         return make_response('No se pudo verificar', 401, {'WWW-Authenticate' : 'Basic realm="Login required!"'})
 
     user_data = {}
-    ser_data['FechaPago'] = user.FechaPago
+    user_data['FechaPago'] = user.FechaPago
     user_data['Matricula'] = user.Matricula
     return jsonify({'user':user_data})
 
@@ -206,7 +207,9 @@ def create_bill():
 
     new_bill = Facturas(ClienteID= data['Cliente'], Descripcion= data['Descripcion'], MetodoPago= data['MetodoPago'], FechaPago=data['FechaPago'])
     db.session.add(new_bill)
+    user.FechaPago = data['FechaPago']
     db.session.commit()
+
     return jsonify({'message':'factura agregada'})
 
 #modificar factura
@@ -231,7 +234,7 @@ def alter_bill(id):
     return jsonify({'message':'Factura modificada correctamente'})
 
 #eliminar factura
-@app.route('/facturas/<id>',methods=['DELETE'])
+@app.route('/factura/<id>',methods=['DELETE'])
 def delete_facturas(id):
     bill = Facturas.query.filter_by(FacturaID=id).first()
     if not bill:
@@ -240,5 +243,10 @@ def delete_facturas(id):
     db.session.commit()
     return jsonify({'message':'Factura eliminada'})
 
+
+@app.route('/')
+def hello():
+    return "<h1>Hello world</h1>"
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=os.getenv('PORT'),debug=True)
