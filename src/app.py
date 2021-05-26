@@ -10,7 +10,8 @@ from sqlalchemy.orm import sessionmaker
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '2021secrete'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root@localhost/Clientes'
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root@localhost/Clientes'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root@db/Clientes'
 app.config['SQLALCHEMY_TRACK_MODIFICATION'] = False
 
 #pasamos la configuración de la app a sqlalchemy y guardamos el objeto para acceder a la base
@@ -22,7 +23,7 @@ class Usuarios(db.Model):
     Nombre = db.Column(db.String(45))
     Apellido = db.Column(db.String(45))
     Direccion = db.Column(db.String(100))
-    ProductoID = db.Column(db.Integer(),db.ForeignKey('productos.ProductoID'))
+    ProductoID = db.Column(db.Integer(),db.ForeignKey('productos.ProductoID',ondelete='NO ACTION', onupdate='NO ACTION'))
     producto_id = db.relationship('Productos',foreign_keys=ProductoID, backref='usuarios')
     FechaPago = db.Column(db.DateTime)
     Password = db.Column(db.String(45))
@@ -246,7 +247,7 @@ def delete_facturas(id):
 
 @app.route('/')
 def hello():
-    return "<h1>Hello world</h1>"
+    return "<h1>Hello mundo</h1>"
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=os.getenv('PORT'),debug=True)

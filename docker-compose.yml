@@ -1,21 +1,44 @@
 version: '3'
+
 services:
+
   api:
-    build:
-      context: ./src/
-      dockerfile: Dockerfile
+    container_name: flask_api
+    restart: always
+    build: ./src
     volumes:
-      - ./src/:/app/src/
+      - ./src:/app/src
+    networks:
+      - apinetwork
+    expose:
+      - "5000"
     ports:
-      - 5000:5000
+      - "5000:5000"
+
+  nginx:
+    container_name: nginx
+    restart: always
+    build: ./nginx
+    networks:
+      - apinetwork
+    expose:
+      - "8080"
+    ports:
+      - "8000:8080"
+
+  db:
+    image: mariadb
     environment:
-      PORT: 5000
-      FLASK_DEBUG: 1
-  webserver:
-    image: nginx:latest
-    ports:
-      - 8000:80
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'true'
+      MYSQL_DATABASE: Clientes
     volumes:
-      - ./nginx/conf.d/:/etc/nginx/conf.d/
+      - databases:/var/lib/mysql
+      - ./db/clientes.sql:/docker-entrypoint-initdb.d/clientes.sql
+    networks:
+      - apinetwork
 
+networks:
+  apinetwork:
 
+volumes:
+  databases:
