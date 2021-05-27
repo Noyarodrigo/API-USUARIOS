@@ -1,3 +1,5 @@
 *.pyc
 flask-mysql-env/
 tests/
+tests
+.gitignore
