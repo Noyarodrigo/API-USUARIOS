@@ -8,15 +8,6 @@ import datetime
 from functools import wraps
 from sqlalchemy.orm import sessionmaker
 
-app = Flask(__name__)
-app.config['SECRET_KEY'] = '2021secrete'
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root@localhost/Clientes'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root@db/Clientes'
-app.config['SQLALCHEMY_TRACK_MODIFICATION'] = False
-
-#pasamos la configuración de la app a sqlalchemy y guardamos el objeto para acceder a la base
-db = SQLAlchemy(app)
-
 #-------Database config-----
 class Usuarios(db.Model):
     ClienteID = db.Column(db.Integer, primary_key=True)
@@ -48,7 +39,6 @@ class Admins(db.Model):
     AdminID = db.Column(db.Integer, primary_key=True)
     User = db.Column(db.String(45))
     Password = db.Column(db.String(45))
-
 
 #-------  API usuario -------
 #buscar todos los usuarios
