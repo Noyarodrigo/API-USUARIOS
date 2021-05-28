@@ -25,7 +25,7 @@ DROP TABLE IF EXISTS `admins`;
 CREATE TABLE `admins` (
   `AdminID` int(11) NOT NULL AUTO_INCREMENT,
   `User` varchar(45) NOT NULL,
-  `Password` varchar(45) NOT NULL,
+  `Password` varchar(100) NOT NULL,
   PRIMARY KEY (`AdminID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
