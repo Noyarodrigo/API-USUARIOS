@@ -3,10 +3,28 @@ from flask import Flask, request, jsonify, make_response
 from flask_sqlalchemy import SQLAlchemy
 import uuid
 from werkzeug.security import generate_password_hash, check_password_hash
-import jwt
 import datetime
 from functools import wraps
 from sqlalchemy.orm import sessionmaker
+from flask_login import LoginManager,login_required
+from models import *
+
+app = Flask(__name__)
+db = SQLAlchemy()
+db.init_app(app)
+app.config['SECRET_KEY'] = '2021secrete'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root@db/Clientes'
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root@localhost/Clientes'
+app.config['SQLALCHEMY_TRACK_MODIFICATION'] = False
+
+login_manager = LoginManager()
+login_manager.login_view = 'localhost/login'
+login_manager.init_app(app)
+
+@login_manager.user_loader
+def load_user(AdminID):
+    # since the user_id is just the primary key of our user table, use it in the query for the user
+    return Admins.query.get(int(AdminID))
 
 #-------  API usuario -------
 #buscar todos los usuarios

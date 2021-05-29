@@ -3,15 +3,28 @@ version: '3'
 services:
 
   api:
-    container_name: flask_api
-    restart: always
-    build: ./src
+    environment:
+      FLASK_APP: app
+    container_name: api
+    restart: unless-stopped
+    build: ./Api
     volumes:
-      - ./src:/app/src
+      - ./Api:/app/src
     networks:
       - apinetwork
-    expose:
-      - "5000"
+    ports:
+      - "6000:6000"
+
+  front:
+    environment:
+      FLASK_APP: app
+    container_name: front
+    restart: unless-stopped
+    build: ./FrontBack
+    volumes:
+      - ./FrontBack:/app/src
+    networks:
+      - apinetwork
     ports:
       - "5000:5000"
 
@@ -21,8 +34,6 @@ services:
     build: ./nginx
     networks:
       - apinetwork
-    expose:
-      - "8080"
     ports:
       - "8000:8080"
 

@@ -7,8 +7,8 @@ from flask_login import LoginManager
 app = Flask(__name__)
 db.init_app(app)
 app.config['SECRET_KEY'] = '2021secrete'
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root@db/Clientes'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root@localhost/Clientes'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root@db/Clientes'
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root@localhost/Clientes'
 app.config['SQLALCHEMY_TRACK_MODIFICATION'] = False
 
 #pasamos la configuración de la app a sqlalchemy y guardamos el objeto para acceder a la base

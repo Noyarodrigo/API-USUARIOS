@@ -9,3 +9,4 @@ MarkupSafe==2.0.1
 PyMySQL==1.0.2
 SQLAlchemy==1.4.16
 Werkzeug==2.0.1
+gunicorn
