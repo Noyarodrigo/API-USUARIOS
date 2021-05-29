@@ -1,7 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
+from api import db 
 
-db = SQLAlchemy()
 
 #-------Database config-----
 class Usuarios(db.Model):

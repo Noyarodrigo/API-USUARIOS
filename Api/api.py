@@ -7,18 +7,20 @@ import datetime
 from functools import wraps
 from sqlalchemy.orm import sessionmaker
 from flask_login import LoginManager,login_required
-from models import *
 
 app = Flask(__name__)
-db = SQLAlchemy()
-db.init_app(app)
 app.config['SECRET_KEY'] = '2021secrete'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root@db/Clientes'
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root@localhost/Clientes'
 app.config['SQLALCHEMY_TRACK_MODIFICATION'] = False
 
+db = SQLAlchemy(app)
+#db.init_app(app)
+
+from models import *
+
 login_manager = LoginManager()
-login_manager.login_view = 'localhost/login'
+login_manager.login_view = '/login'
 login_manager.init_app(app)
 
 @login_manager.user_loader
@@ -29,7 +31,7 @@ def load_user(AdminID):
 #-------  API usuario -------
 #buscar todos los usuarios
 @app.route('/user',methods=['GET'])
-@login_required
+#@login_required
 def get_all_users():
     users = Usuarios.query.all()
 
