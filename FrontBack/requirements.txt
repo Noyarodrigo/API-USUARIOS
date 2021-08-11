@@ -11,3 +11,4 @@ SQLAlchemy==1.4.16
 Werkzeug==2.0.1
 gunicorn
 requests
+flask_jwt_extended

@@ -1,8 +1,19 @@
 from flask import Flask
+from flask import Blueprint, render_template, redirect, url_for, request, flash, jsonify, make_response
+from werkzeug.security import generate_password_hash, check_password_hash
+from models import Admins, db
 from auth.auth import auth as auth_blueprint
 from core.main import main as main_blueprint
 from models import db,Admins
 from flask_login import LoginManager
+from flask_login import login_user, logout_user, login_required
+from flask_jwt_extended import (
+    JWTManager, jwt_required, create_access_token,
+     create_refresh_token,
+    get_jwt_identity, set_access_cookies,
+    set_refresh_cookies, unset_jwt_cookies,get_csrf_token
+)
+#jwt_refresh_token_required,
 
 app = Flask(__name__)
 db.init_app(app)
@@ -10,8 +21,19 @@ app.config['SECRET_KEY'] = '2021secrete'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root@db/Clientes'
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root@localhost/Clientes'
 app.config['SQLALCHEMY_TRACK_MODIFICATION'] = False
+# Configure application to store JWTs in cookies
+app.config['JWT_TOKEN_LOCATION'] = ['cookies']
+# Only allow JWT cookies to be sent over https. In production, this
+# should likely be True
+app.config['JWT_COOKIE_SECURE'] = False
+app.config['JWT_COOKIE_CSRF_PROTECT'] = True
+app.config['JWT_ACCESS_COOKIE_PATH'] = '/api'
+app.config['JWT_REFRESH_COOKIE_PATH'] = '/token/refresh'
+app.config['JWT_COOKIE_CSRF_PROTECT'] = True
+app.config['JWT_CSRF_IN_COOKIES'] = False
+app.config['JWT_SECRET_KEY'] = '2021secrete'  # Change this!
 
-#pasamos la configuración de la app a sqlalchemy y guardamos el objeto para acceder a la base
+jwt = JWTManager(app)
 
 # blueprint for auth routes in our app
 app.register_blueprint(auth_blueprint)
@@ -27,3 +49,32 @@ login_manager.init_app(app)
 def load_user(AdminID):
     # since the user_id is just the primary key of our user table, use it in the query for the user
     return Admins.query.get(int(AdminID))
+
+@app.route('/login', methods=['POST'])
+def login_post():
+    email = request.form.get('email')
+    password = request.form.get('password')
+    remember = True if request.form.get('remember') else False
+
+    user = Admins.query.filter_by(User=email).first()
+
+    # check if the user actually exists
+    # take the user-supplied password, hash it, and compare it to the hashed password in the database
+    if not user or not check_password_hash(user.Password, password):
+        flash('Please check your login details and try again.')
+        return redirect(url_for('auth.login')) # if the user doesn't exist or password is wrong, reload the page
+
+    user_data = {'AdminID':user.AdminID,'pass':user.Password}
+    access_token = create_access_token(identity=user_data)
+    refresh_token = create_refresh_token(identity=user_data)
+
+    login_user(user, remember=remember)
+
+    resp = make_response(redirect(url_for('main.profile')))
+    resp.headers['csrf_access_token'] = get_csrf_token(access_token)
+    resp.headers['csrf_refresh_token'] = get_csrf_token(refresh_token)
+    resp.set_cookie(key='access_token', value=access_token, httponly = True)
+    #set_access_cookies(resp, access_token)
+    #set_refresh_cookies(resp, refresh_token)
+    return resp
+

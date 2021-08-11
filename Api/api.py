@@ -1,11 +1,13 @@
 import os
-from flask import Flask, request, jsonify, make_response, url_for
+from flask import Flask, request, jsonify, make_response, url_for, session
 from flask_sqlalchemy import SQLAlchemy
 import uuid
 from werkzeug.security import generate_password_hash, check_password_hash
 import datetime
 from functools import wraps
 from sqlalchemy.orm import sessionmaker
+from flask_jwt_extended import (
+    JWTManager, jwt_required, get_jwt_identity)
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '2021secrete'
@@ -15,12 +17,28 @@ app.config['SQLALCHEMY_TRACK_MODIFICATION'] = False
 
 db = SQLAlchemy(app)
 
+# Configure application to store JWTs in cookies
+app.config['JWT_TOKEN_LOCATION'] = ['cookies']
+# Only allow JWT cookies to be sent over https. In production, this
+# should likely be True
+app.config['JWT_COOKIE_SECURE'] = False
+app.config['JWT_COOKIE_CSRF_PROTECT'] = True
+app.config['JWT_ACCESS_COOKIE_PATH'] = '/api:6000/'
+app.config['JWT_REFRESH_COOKIE_PATH'] = '/token/refresh'
+app.config['JWT_COOKIE_CSRF_PROTECT'] = True
+app.config['JWT_CSRF_IN_COOKIES'] = False
+app.config['JWT_SECRET_KEY'] = '2021secrete'  # Change this!
+
+jwt = JWTManager(app)
+
+
 from models import *
 
 
 #-------  API usuario -------
 #buscar todos los usuarios
 @app.route('/user',methods=['GET'])
+@jwt_required()
 def get_all_users():
     users = Usuarios.query.all()
 
@@ -36,8 +54,13 @@ def get_all_users():
     return jsonify({'usuarios' : output})
 
 #buscar un usuario
-@app.route('/user/<id>',methods=['GET'])
+@app.route('/user/<id>',methods=['GET','POST'])
+@jwt_required()
 def get_one_user(id):
+    username = get_jwt_identity()
+    return jsonify({'username':username})
+
+
     user = db.session.query(Usuarios.ClienteID, Usuarios.Nombre,Usuarios.Apellido, Usuarios.Matricula,Productos.Descripcion,Usuarios.Direccion,Usuarios.FechaPago)\
             .filter(Usuarios.ClienteID == id)\
             .filter(Usuarios.ProductoID == Productos.ProductoID)\
@@ -211,11 +234,6 @@ def delete_facturas(id):
     db.session.delete(bill)
     db.session.commit()
     return jsonify({'message':'Factura eliminada'})
-
-
-@app.route('/')
-def hello():
-    return "<h1>Hello mundo</h1>"
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=os.getenv('PORT'),debug=True)
