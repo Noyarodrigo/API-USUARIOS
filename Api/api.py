@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request, jsonify, make_response, url_for, session
+from flask import Flask, request, jsonify, make_response, url_for
 from flask_sqlalchemy import SQLAlchemy
 import uuid
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -34,7 +34,6 @@ jwt = JWTManager(app)
 
 from models import *
 
-
 #-------  API usuario -------
 #buscar todos los usuarios
 @app.route('/user',methods=['GET'])
@@ -54,13 +53,9 @@ def get_all_users():
     return jsonify({'usuarios' : output})
 
 #buscar un usuario
-@app.route('/user/<id>',methods=['GET','POST'])
+@app.route('/user/<id>',methods=['GET'])
 @jwt_required()
 def get_one_user(id):
-    username = get_jwt_identity()
-    return jsonify({'username':username})
-
-
     user = db.session.query(Usuarios.ClienteID, Usuarios.Nombre,Usuarios.Apellido, Usuarios.Matricula,Productos.Descripcion,Usuarios.Direccion,Usuarios.FechaPago)\
             .filter(Usuarios.ClienteID == id)\
             .filter(Usuarios.ProductoID == Productos.ProductoID)\
@@ -81,6 +76,7 @@ def get_one_user(id):
 
 #crear usuario
 @app.route('/user',methods=['POST'])
+@jwt_required()
 def create_user():
     data = request.get_json()
     new_user = Usuarios(Nombre= data['Nombre'], Apellido= data['Apellido'], Direccion= data['Direccion'],ProductoID=data['Producto'], Password= data['Apellido'],Matricula= data['Matricula'])
@@ -90,6 +86,7 @@ def create_user():
 
 #modificar usuario
 @app.route('/user/<id>',methods=['PUT'])
+@jwt_required()
 def alter_user(id):
     user = Usuarios.query.filter_by(ClienteID=id).first()
     if not user:
@@ -115,6 +112,7 @@ def alter_user(id):
 
 #eliminar usuario
 @app.route('/user/<id>',methods=['DELETE'])
+@jwt_required()
 def delete_user(id):
     user = Usuarios.query.filter_by(ClienteID=id).first()
     if not user:
@@ -126,6 +124,7 @@ def delete_user(id):
 #-------  API pago/login -------
 #buscar fecha pago
 @app.route('/login',methods=['POST'])
+@jwt_required()
 def get_payment():
     data = request.get_json()
 
@@ -148,6 +147,7 @@ def get_payment():
 #-------  API factura -------
 #buscar todas las factuas
 @app.route('/factura',methods=['GET'])
+@jwt_required()
 def get_all_bills():
     #bills = Facturas.query.all()
 
@@ -169,6 +169,7 @@ def get_all_bills():
 
 #buscar una factura
 @app.route('/factura/<id>',methods=['GET'])
+@jwt_required()
 def get_one_bill(id):
     bill = db.session.query(Facturas.FacturaID, Usuarios.ClienteID, Usuarios.Nombre, Usuarios.Apellido, Facturas.Descripcion,Facturas.MetodoPago,Facturas.FechaPago)\
             .filter(Facturas.FacturaID == id)\
@@ -190,6 +191,7 @@ def get_one_bill(id):
 
 #crear factura
 @app.route('/factura',methods=['POST'])
+@jwt_required()
 def create_bill():
     data = request.get_json()
     #check if user exist
@@ -206,6 +208,7 @@ def create_bill():
 
 #modificar factura
 @app.route('/factura/<id>',methods=['PUT'])
+@jwt_required()
 def alter_bill(id):
     bill = Facturas.query.filter_by(FacturaID=id).first()
     if not bill:
@@ -227,6 +230,7 @@ def alter_bill(id):
 
 #eliminar factura
 @app.route('/factura/<id>',methods=['DELETE'])
+@jwt_required()
 def delete_facturas(id):
     bill = Facturas.query.filter_by(FacturaID=id).first()
     if not bill:
@@ -234,6 +238,77 @@ def delete_facturas(id):
     db.session.delete(bill)
     db.session.commit()
     return jsonify({'message':'Factura eliminada'})
+
+#-------  API productos -------
+#buscar todos los productos
+@app.route('/product',methods=['GET'])
+@jwt_required()
+def get_all_products():
+    products = Productos.query.all()
+
+    output = []
+    for product in products:
+        product_data = {}
+        product_data['ID'] = product.ProductoID
+        product_data['Nombre'] = product.Nombre
+        product_data['Descripcion'] = product.Descripcion
+        output.append(product_data)
+
+    return jsonify({'productos' : output})
+
+#buscar un producto
+@app.route('/product/<id>',methods=['GET'])
+@jwt_required()
+def get_one_product(id):
+    product = db.session.query(Productos.ProductoID, Productos.Nombre,Productos.Descripcion)\
+            .filter(Productos.ProductoID == id)\
+            .first()
+
+    if not product:
+        return jsonify({'message':'Producto no encontrado'})
+
+    product_data = {}
+    product_data['ID'] = product.ProductoID
+    product_data['Nombre'] = product.Nombre
+    product_data['Descripcion'] = product.Descripcion
+    return jsonify({'product':product_data})
+
+#crear Producto
+@app.route('/product',methods=['POST'])
+@jwt_required()
+def create_product():
+    data = request.get_json()
+    new_product = Productos(Nombre= data['Nombre'], Descripcion= data['Descripcion'])
+    db.session.add(new_product)
+    db.session.commit()
+    return jsonify({'message':'Producto agregado'})
+
+#modificar Producto
+@app.route('/product/<id>',methods=['PUT'])
+@jwt_required()
+def alter_product(id):
+    product = Productos.query.filter_by(ProductoID=id).first()
+    if not product:
+        return jsonify({'message':'No existe el Producto'})
+    args = request.args
+    if 'Nombre' in args:
+        product.Nombre = args['Nombre']
+    if 'Descripcion' in args:
+        product.Descripcion = args['Descripcion']
+    db.session.commit()
+
+    return jsonify({'message':'Modificado correctamente'})
+
+#eliminar Producto
+@app.route('/product/<id>',methods=['DELETE'])
+@jwt_required()
+def delete_product(id):
+    product = Productos.query.filter_by(ProductoID=id).first()
+    if not product:
+        return jsonify({'message':'No existe el Producto'})
+    db.session.delete(product)
+    db.session.commit()
+    return jsonify({'message':'Producto eliminado'})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=os.getenv('PORT'),debug=True)

@@ -30,7 +30,7 @@ app.config['JWT_COOKIE_CSRF_PROTECT'] = True
 app.config['JWT_ACCESS_COOKIE_PATH'] = '/api'
 app.config['JWT_REFRESH_COOKIE_PATH'] = '/token/refresh'
 app.config['JWT_COOKIE_CSRF_PROTECT'] = True
-app.config['JWT_CSRF_IN_COOKIES'] = False
+app.config['JWT_CSRF_IN_COOKIES'] = True
 app.config['JWT_SECRET_KEY'] = '2021secrete'  # Change this!
 
 jwt = JWTManager(app)
@@ -49,32 +49,3 @@ login_manager.init_app(app)
 def load_user(AdminID):
     # since the user_id is just the primary key of our user table, use it in the query for the user
     return Admins.query.get(int(AdminID))
-
-@app.route('/login', methods=['POST'])
-def login_post():
-    email = request.form.get('email')
-    password = request.form.get('password')
-    remember = True if request.form.get('remember') else False
-
-    user = Admins.query.filter_by(User=email).first()
-
-    # check if the user actually exists
-    # take the user-supplied password, hash it, and compare it to the hashed password in the database
-    if not user or not check_password_hash(user.Password, password):
-        flash('Please check your login details and try again.')
-        return redirect(url_for('auth.login')) # if the user doesn't exist or password is wrong, reload the page
-
-    user_data = {'AdminID':user.AdminID,'pass':user.Password}
-    access_token = create_access_token(identity=user_data)
-    refresh_token = create_refresh_token(identity=user_data)
-
-    login_user(user, remember=remember)
-
-    resp = make_response(redirect(url_for('main.profile')))
-    resp.headers['csrf_access_token'] = get_csrf_token(access_token)
-    resp.headers['csrf_refresh_token'] = get_csrf_token(refresh_token)
-    resp.set_cookie(key='access_token', value=access_token, httponly = True)
-    #set_access_cookies(resp, access_token)
-    #set_refresh_cookies(resp, refresh_token)
-    return resp
-

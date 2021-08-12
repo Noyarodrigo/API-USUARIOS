@@ -3,3 +3,8 @@ flask-mysql-env/
 tests/
 tests
 .gitignore
+gitignore
+*.txt
+__pycache__
+*.swo
+*.swp

@@ -15,7 +15,7 @@ auth = Blueprint('auth', __name__)
 @auth.route('/login')
 def login():
     return render_template('login.html')
-"""
+
 @auth.route('/login', methods=['POST'])
 def login_post():
     email = request.form.get('email')
@@ -30,17 +30,18 @@ def login_post():
         flash('Please check your login details and try again.')
         return redirect(url_for('auth.login')) # if the user doesn't exist or password is wrong, reload the page
 
-    access_token = create_access_token(identity=user.AdminID)
-    refresh_token = create_refresh_token(identity=user.AdminID)
+    user_data = {'AdminID':user.AdminID,'pass':user.Password}
+    access_token = create_access_token(identity=user_data)
+    #refresh_token = create_refresh_token(identity=user_data)
 
     login_user(user, remember=remember)
 
-    resp = make_response(redirect(url_for('main.profile')))
-    resp.headers['csrf_access_token'] = get_csrf_token(access_token)
-    resp.headers['csrf_refresh_token'] = get_csrf_token(refresh_token)
-    set_access_cookies(resp, access_token)
-    set_refresh_cookies(resp, refresh_token)
+    resp = make_response(redirect(url_for('main.index')))
+    #resp.headers['csrf_access_token'] = get_csrf_token(access_token)
+    #resp.headers['csrf_refresh_token'] = get_csrf_token(refresh_token)
+    resp.set_cookie(key='access_token', value=access_token, httponly = True)
     return resp
+
 """
 @auth.route('/token/refresh', methods=['POST'])
 #@jwt_refresh_token_required
@@ -55,7 +56,6 @@ def refresh():
     set_access_cookies(resp, access_token)
     return resp, 200
 
-"""
 @auth.route('/signup')
 def signup():
     return render_template('signup.html')
@@ -84,7 +84,8 @@ def signup_post():
 @auth.route('/logout')
 @login_required
 def logout():
-    resp = jsonify({'logout': True})
-    unset_jwt_cookies(resp)
+    resp = make_response(redirect(url_for('main.index')))
+    resp.delete_cookie('access_token', path='/', domain=None)
     logout_user()
-    return redirect(url_for('main.index'))
+
+    return resp

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="title">
+  Panel de Usuarios
+</h1>
+<table>
+<tr>
+    <th>ID</th>
+    <th>Nombre</th>
+    <th>Apellido</th>
+    <th>Direccion</th>
+  </tr>
+{% for elems in usuarios %}
+	<tr>
+	  <td>{{elems['ID']}}</td>
+	  <td>{{elems['Nombre']}}</td>
+	  <td>{{elems['Apellido']}}</td>
+	  <td>{{elems['Dirección']}}</td>
+	</tr>
+{%endfor%}
+</table>
+{% endblock %}

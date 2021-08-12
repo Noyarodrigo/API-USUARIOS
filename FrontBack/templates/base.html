@@ -22,8 +22,12 @@
                                 Home
                             </a>
 			    {% if current_user.is_authenticated %}
-    <a href="{{ url_for('main.profile') }}" class="navbar-item">
-        Profile
+    <a href="{{ url_for('main.usuarios') }}" class="navbar-item">
+        Usuarios
+    <a href="{{ url_for('main.servicios') }}" class="navbar-item">
+        Servicios
+    <a href="{{ url_for('main.facturas') }}" class="navbar-item">
+        Facturas
     </a>
     {% endif %}
     {% if not current_user.is_authenticated %}
