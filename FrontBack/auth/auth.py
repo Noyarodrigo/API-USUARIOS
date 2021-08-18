@@ -33,11 +33,12 @@ def login_post():
     user_data = {'AdminID':user.AdminID,'pass':user.Password}
     access_token = create_access_token(identity=user_data)
     #refresh_token = create_refresh_token(identity=user_data)
-
     login_user(user, remember=remember)
 
     resp = make_response(redirect(url_for('main.index')))
-    #resp.headers['csrf_access_token'] = get_csrf_token(access_token)
+    set_access_cookies(resp, access_token)
+    #set_refresh_cookies(resp, refresh_token)
+    #resp.headers['csrf_token'] = get_csrf_token(access_token)
     #resp.headers['csrf_refresh_token'] = get_csrf_token(refresh_token)
     resp.set_cookie(key='access_token', value=access_token, httponly = True)
     return resp

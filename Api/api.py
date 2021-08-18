@@ -8,6 +8,7 @@ from functools import wraps
 from sqlalchemy.orm import sessionmaker
 from flask_jwt_extended import (
     JWTManager, jwt_required, get_jwt_identity)
+import json
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '2021secrete'
@@ -22,10 +23,9 @@ app.config['JWT_TOKEN_LOCATION'] = ['cookies']
 # Only allow JWT cookies to be sent over https. In production, this
 # should likely be True
 app.config['JWT_COOKIE_SECURE'] = False
-app.config['JWT_COOKIE_CSRF_PROTECT'] = True
+app.config['JWT_COOKIE_CSRF_PROTECT'] = False
 app.config['JWT_ACCESS_COOKIE_PATH'] = '/api:6000/'
 app.config['JWT_REFRESH_COOKIE_PATH'] = '/token/refresh'
-app.config['JWT_COOKIE_CSRF_PROTECT'] = True
 app.config['JWT_CSRF_IN_COOKIES'] = False
 app.config['JWT_SECRET_KEY'] = '2021secrete'  # Change this!
 
@@ -56,7 +56,7 @@ def get_all_users():
 @app.route('/user/<id>',methods=['GET'])
 @jwt_required()
 def get_one_user(id):
-    user = db.session.query(Usuarios.ClienteID, Usuarios.Nombre,Usuarios.Apellido, Usuarios.Matricula,Productos.Descripcion,Usuarios.Direccion,Usuarios.FechaPago)\
+    user = db.session.query(Usuarios.ClienteID, Usuarios.Nombre,Usuarios.Apellido, Usuarios.Matricula,Productos.Nombre.label("Producto"),Usuarios.Direccion,Usuarios.FechaPago,Usuarios.Password)\
             .filter(Usuarios.ClienteID == id)\
             .filter(Usuarios.ProductoID == Productos.ProductoID)\
             .first()
@@ -69,9 +69,10 @@ def get_one_user(id):
     user_data['Nombre'] = user.Nombre
     user_data['Apellido'] = user.Apellido
     user_data['Direccion'] = user.Direccion
-    user_data['Producto'] = user.Descripcion
+    user_data['Producto'] = user.Producto
     user_data['Matricula'] = user.Matricula
     user_data['FechaPago'] = user.FechaPago
+    user_data['Password'] = user.Password
     return jsonify({'user':user_data})
 
 #crear usuario
@@ -79,7 +80,7 @@ def get_one_user(id):
 @jwt_required()
 def create_user():
     data = request.get_json()
-    new_user = Usuarios(Nombre= data['Nombre'], Apellido= data['Apellido'], Direccion= data['Direccion'],ProductoID=data['Producto'], Password= data['Apellido'],Matricula= data['Matricula'])
+    new_user = Usuarios(Nombre= data['nombre'], Apellido= data['apellido'], Direccion= data['direccion'],ProductoID=data['producto'], Password= data['password'],Matricula= data['matricula'])
     db.session.add(new_user)
     db.session.commit()
     return jsonify({'message':'cliente agregado'})
@@ -91,7 +92,7 @@ def alter_user(id):
     user = Usuarios.query.filter_by(ClienteID=id).first()
     if not user:
         return jsonify({'message':'No existe el usuario'})
-    args = request.args
+    args = request.get_json()
     if 'Nombre' in args:
         user.Nombre = args['Nombre']
     if 'Apellido' in args:
@@ -151,8 +152,10 @@ def get_payment():
 def get_all_bills():
     #bills = Facturas.query.all()
 
-    bills = db.session.query(Facturas.FacturaID, Usuarios.ClienteID, Usuarios.Nombre, Usuarios.Apellido, Facturas.Descripcion,Facturas.MetodoPago,Facturas.FechaPago)\
+    bills = db.session.query(Facturas.FacturaID, Usuarios.ClienteID, Usuarios.Nombre, Usuarios.Apellido, Facturas.Descripcion,Facturas.MetodoPago,Facturas.FechaPago,Productos.Monto)\
             .filter(Facturas.ClienteID == Usuarios.ClienteID)\
+            .filter(Productos.ProductoID == Usuarios.ProductoID)\
+            .order_by(Facturas.FechaPago)\
             .all()
     output = []
     for bill in bills:
@@ -164,6 +167,7 @@ def get_all_bills():
         bill_data['Descripcion'] = bill.Descripcion
         bill_data['MetodoPago'] = bill.MetodoPago
         bill_data['FechaPago'] = bill.FechaPago
+        bill_data['Monto'] = bill.Monto
         output.append(bill_data)
     return jsonify({'bills' : output})
 
@@ -252,6 +256,7 @@ def get_all_products():
         product_data['ID'] = product.ProductoID
         product_data['Nombre'] = product.Nombre
         product_data['Descripcion'] = product.Descripcion
+        product_data['Monto'] = product.Monto
         output.append(product_data)
 
     return jsonify({'productos' : output})

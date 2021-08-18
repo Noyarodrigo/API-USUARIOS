@@ -2,21 +2,19 @@
 
 {% block content %}
 <h1 class="title">
-  Panel de Usuarios
+  Servicios
 </h1>
 <table>
 <tr>
-    <th>ID</th>
     <th>Nombre</th>
-    <th>Apellido</th>
-    <th>Direccion</th>
+    <th>Descripcion</th>
+    <th>Monto</th>
   </tr>
-{% for elems in usuarios %}
+{% for elems in productos %}
 	<tr>
-	  <td>{{elems['ID']}}</td>
 	  <td>{{elems['Nombre']}}</td>
-	  <td>{{elems['Apellido']}}</td>
-	  <td>{{elems['Dirección']}}</td>
+	  <td>{{elems['Descripcion']}}</td>
+	  <td>{{elems['Monto']}}</td>
 	</tr>
 {%endfor%}
 </table>

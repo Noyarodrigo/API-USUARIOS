@@ -63,6 +63,7 @@ CREATE TABLE `productos` (
   `ProductoID` int(11) NOT NULL AUTO_INCREMENT,
   `Nombre` varchar(45) NOT NULL,
   `Descripcion` varchar(45) NOT NULL,
+  `Monto` float(45) NOT NULL,
   PRIMARY KEY (`ProductoID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;

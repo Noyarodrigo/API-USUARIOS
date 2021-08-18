@@ -2,21 +2,25 @@
 
 {% block content %}
 <h1 class="title">
-  Panel de Usuarios
+  Facturas
 </h1>
 <table>
 <tr>
     <th>ID</th>
+    <th>Fecha</th>
     <th>Nombre</th>
-    <th>Apellido</th>
-    <th>Direccion</th>
+    <th>Monto</th>
+    <th>Descripción</th>
+    <th>Metodo de pago</th>
   </tr>
-{% for elems in usuarios %}
+{% for elems in bills %}
 	<tr>
-	  <td>{{elems['ID']}}</td>
-	  <td>{{elems['Nombre']}}</td>
-	  <td>{{elems['Apellido']}}</td>
-	  <td>{{elems['Dirección']}}</td>
+	  <td>{{elems['FacturaID']}}</td>
+	  <td>{{elems['FechaPago']}}</td>
+	  <td>{{elems['Nombre']}} {{elems['Apellido']}}</td>
+	  <td>{{elems['Monto']}}</td>
+	  <td>{{elems['Descripcion']}}</td>
+	  <td>{{elems['MetodoPago']}}</td>
 	</tr>
 {%endfor%}
 </table>

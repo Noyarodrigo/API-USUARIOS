@@ -19,6 +19,7 @@ class Productos(db.Model):
     ProductoID= db.Column(db.Integer,primary_key=True)
     Nombre = db.Column(db.String(45))
     Descripcion = db.Column(db.String(45))
+    Monto = db.Column(db.Float(45))
 
 class Facturas(db.Model):
     FacturaID = db.Column(db.Integer, primary_key=True)
