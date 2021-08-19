@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1 class="title">
+  Nuevo Servicio
+</h1>
+    <form method="POST" action="{{url_for('main.servicios_handler')}}">
+	<label for="Nombre">Nombre:</label><br>
+	<input type="text" id="Nombre" name="Nombre"><br>
+	<label for="Descripcion">Descripcion:</label><br>
+	<input type="text" id="Descripcion" name="Descripcion"><br>
+	<label for="Monto">Monto:</label><br>
+	<input type="text" id="Monto" name="Monto" value="0"><br>
+ 	<input type="submit" value="Crear" name="accion"/>
+</form>
+{% endblock %}

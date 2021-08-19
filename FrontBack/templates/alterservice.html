@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1 class="title">
+  Modificar Servicio
+</h1>
+    <form method="POST" action="{{url_for('main.servicios_handler')}}">
+	<label for="Nombre">Nombre:</label><br>
+	<input type="text" id="Nombre" name="Nombre" value = "{{data['Nombre']}}"><br>
+	<label for="Descripcion">Descripcion:</label><br>
+	<input type="text" id="Descripcion" name="Descripcion" value = "{{data['Descripcion']}}"><br>
+	<label for="Monto">Monto:</label><br>
+	<input type="text" id="Monto" name="Monto" value="{{data['Monto']}}"><br>
+	<input type=hidden value="{{id}}" name="id"/>
+ 	<input type="submit" value="Actualizar" name="accion"/>
+</form>
+{% endblock %}

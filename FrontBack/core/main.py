@@ -49,7 +49,6 @@ def user_handler():
         return render_template('newuser.html',productos=names)
 
     if request.method == 'POST':
-
         form_data = request.form
         if form_data['accion'] == 'Actualizar':
             r = requests.put('http://api:6000/user/'+form_data['id'],cookies=token_dict,json= form_data)
@@ -69,6 +68,38 @@ def servicios():
     response = json.loads(r.text)
     return render_template('productos.html', productos=response['productos'])
 
+@main.route('/servicios/handler',methods=['GET','POST'])
+@login_required
+def servicios_handler():
+    token_dict = get_cookie()
+    if request.method == 'GET':
+        arg_data = request.args
+        if '_method' in arg_data and arg_data['_method'] == '_DELETE':
+            r = requests.delete('http://api:6000/product/'+ arg_data['id'],cookies=token_dict)
+            #response = json.loads(r.text)
+            return redirect('/servicios') 
+
+        if '_method' in arg_data and arg_data['_method'] == '_UPDATE':
+            r = requests.get('http://api:6000/product/'+ arg_data['id'],cookies=token_dict)
+            response = json.loads(r.text)
+            return render_template('alterservice.html',data=response['producto'], id=arg_data['id'])
+
+        r = requests.get('http://api:6000/product',cookies=token_dict)
+        response = json.loads(r.text)
+        return render_template('newservice.html')
+
+    if request.method == 'POST':
+        form_data = request.form
+        if form_data['accion'] == 'Actualizar':
+            r = requests.put('http://api:6000/product/'+form_data['id'],cookies=token_dict,json= form_data)
+            response = json.loads(r.text)
+            return redirect('/servicios') 
+
+        if form_data['accion'] == 'Crear':
+            r = requests.post('http://api:6000/product',cookies=token_dict,json= form_data)
+            response = json.loads(r.text)
+            return redirect('/servicios') 
+
 @main.route('/facturas')
 @login_required
 def facturas():
@@ -76,6 +107,42 @@ def facturas():
     r = requests.get('http://api:6000/factura',cookies=token_dict)
     response = json.loads(r.text)
     return render_template('facturas.html', bills=response['bills'])
+
+@main.route('/facturas/handler',methods=['GET','POST'])
+@login_required
+def facturas_handler():
+    token_dict = get_cookie()
+    if request.method == 'GET':
+        arg_data = request.args
+        if '_method' in arg_data and arg_data['_method'] == '_DELETE':
+            r = requests.delete('http://api:6000/factura/'+ arg_data['id'],cookies=token_dict)
+            #response = json.loads(r.text)
+            return redirect('/facturas') 
+
+        if '_method' in arg_data and arg_data['_method'] == '_UPDATE':
+            r = requests.get('http://api:6000/product',cookies=token_dict)
+            response = json.loads(r.text)
+            names = []
+            for el in response['productos']:
+               names.append([el['Nombre'],el['ID']]) 
+
+            r = requests.get('http://api:6000/factura/'+ arg_data['id'],cookies=token_dict)
+            response = json.loads(r.text)
+            return render_template('alterbill.html',data=response['bill'], productos = names, id = arg_data['id'])
+
+        return render_template('newbill.html', id = arg_data['id'])
+
+    if request.method == 'POST':
+        form_data = request.form
+        if form_data['accion'] == 'Actualizar':
+            r = requests.put('http://api:6000/factura/'+form_data['id'],cookies=token_dict,json= form_data)
+            response = json.loads(r.text)
+            return redirect('/facturas') 
+
+        if form_data['accion'] == 'Crear':
+            r = requests.post('http://api:6000/factura',cookies=token_dict,json= form_data)
+            response = json.loads(r.text)
+            return redirect('/facturas') 
 
 def get_cookie():
     token_cookie = request.cookies.get('access_token')

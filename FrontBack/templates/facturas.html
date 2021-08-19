@@ -6,21 +6,33 @@
 </h1>
 <table>
 <tr>
-    <th>ID</th>
     <th>Fecha</th>
     <th>Nombre</th>
     <th>Monto</th>
-    <th>Descripción</th>
     <th>Metodo de pago</th>
+    <th>Descripción</th>
   </tr>
 {% for elems in bills %}
 	<tr>
-	  <td>{{elems['FacturaID']}}</td>
 	  <td>{{elems['FechaPago']}}</td>
 	  <td>{{elems['Nombre']}} {{elems['Apellido']}}</td>
 	  <td>{{elems['Monto']}}</td>
-	  <td>{{elems['Descripcion']}}</td>
 	  <td>{{elems['MetodoPago']}}</td>
+	  <td>{{elems['Descripcion']}}</td>
+	  <td>
+	    <form action="{{url_for('main.facturas_handler')}}" method="GET">
+	      <input type=hidden value="_UPDATE" name="_method"/>
+	      <input type=hidden value="{{elems['FacturaID']}}" name="id"/>
+	      <button type="submit">Modificar</button>
+	    </form>
+	  </td>
+	  <td>
+	    <form action="{{url_for('main.facturas_handler')}}" method="GET">
+	      <input type=hidden value="_DELETE" name="_method"/>
+	      <input type=hidden value="{{elems['FacturaID']}}" name="id"/>
+	      <button type="submit">Eliminar</button>
+	    </form>
+	  </td>
 	</tr>
 {%endfor%}
 </table>

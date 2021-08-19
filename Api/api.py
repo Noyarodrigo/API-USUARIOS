@@ -48,6 +48,7 @@ def get_all_users():
         user_data['Nombre'] = user.Nombre
         user_data['Apellido'] = user.Apellido
         user_data['Direccion'] = user.Direccion
+        user_data['FechaPago'] = user.FechaPago
         output.append(user_data)
 
     return jsonify({'usuarios' : output})
@@ -155,7 +156,7 @@ def get_all_bills():
     bills = db.session.query(Facturas.FacturaID, Usuarios.ClienteID, Usuarios.Nombre, Usuarios.Apellido, Facturas.Descripcion,Facturas.MetodoPago,Facturas.FechaPago,Productos.Monto)\
             .filter(Facturas.ClienteID == Usuarios.ClienteID)\
             .filter(Productos.ProductoID == Usuarios.ProductoID)\
-            .order_by(Facturas.FechaPago)\
+            .order_by(Facturas.FechaPago.desc())\
             .all()
     output = []
     for bill in bills:
@@ -199,13 +200,13 @@ def get_one_bill(id):
 def create_bill():
     data = request.get_json()
     #check if user exist
-    user = Usuarios.query.filter_by(ClienteID=data['Cliente']).first()
+    user = Usuarios.query.filter_by(ClienteID=data['id']).first()
     if not user:
         return jsonify({'message':'No existe el usuario'})
 
-    new_bill = Facturas(ClienteID= data['Cliente'], Descripcion= data['Descripcion'], MetodoPago= data['MetodoPago'], FechaPago=data['FechaPago'])
+    new_bill = Facturas(ClienteID= data['id'], Descripcion= data['descripcion'], MetodoPago= data['metodo'], FechaPago=data['fecha'])
     db.session.add(new_bill)
-    user.FechaPago = data['FechaPago']
+    user.FechaPago = data['fecha']
     db.session.commit()
 
     return jsonify({'message':'factura agregada'})
@@ -217,9 +218,10 @@ def alter_bill(id):
     bill = Facturas.query.filter_by(FacturaID=id).first()
     if not bill:
         return jsonify({'message':'No existe la factura'})
-    args = request.args
-    if 'Cliente' in args:
-        bill.ClienteID = args['Cliente']
+    args = request.get_json()
+    #return args
+    #if 'Cliente' in args:
+    #    bill.ClienteID = args['Cliente']
     if 'Descripcion' in args:
         bill.Descripcion = args['Descripcion']
     if 'MetodoPago' in args:
@@ -265,7 +267,7 @@ def get_all_products():
 @app.route('/product/<id>',methods=['GET'])
 @jwt_required()
 def get_one_product(id):
-    product = db.session.query(Productos.ProductoID, Productos.Nombre,Productos.Descripcion)\
+    product = db.session.query(Productos.ProductoID, Productos.Nombre,Productos.Descripcion,Productos.Monto)\
             .filter(Productos.ProductoID == id)\
             .first()
 
@@ -276,14 +278,15 @@ def get_one_product(id):
     product_data['ID'] = product.ProductoID
     product_data['Nombre'] = product.Nombre
     product_data['Descripcion'] = product.Descripcion
-    return jsonify({'product':product_data})
+    product_data['Monto'] = product.Monto
+    return jsonify({'producto':product_data})
 
 #crear Producto
 @app.route('/product',methods=['POST'])
 @jwt_required()
 def create_product():
     data = request.get_json()
-    new_product = Productos(Nombre= data['Nombre'], Descripcion= data['Descripcion'])
+    new_product = Productos(Nombre= data['Nombre'], Descripcion= data['Descripcion'],Monto = data['Monto'])
     db.session.add(new_product)
     db.session.commit()
     return jsonify({'message':'Producto agregado'})
@@ -295,11 +298,13 @@ def alter_product(id):
     product = Productos.query.filter_by(ProductoID=id).first()
     if not product:
         return jsonify({'message':'No existe el Producto'})
-    args = request.args
+    args = request.get_json()
     if 'Nombre' in args:
         product.Nombre = args['Nombre']
     if 'Descripcion' in args:
         product.Descripcion = args['Descripcion']
+    if 'Monto' in args:
+        product.Monto = args['Monto']
     db.session.commit()
 
     return jsonify({'message':'Modificado correctamente'})

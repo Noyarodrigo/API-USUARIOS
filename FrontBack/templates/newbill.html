@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1 class="title">
+  Nueva Factura
+</h1>
+    <form method="POST" action="{{url_for('main.facturas_handler')}}">
+	<label for="fecha">Fecha:</label><br>
+	<input type="text" id="fecha" name="fecha"><br>
+	<label for="metodo">Metodo:</label><br>
+	<input type="text" id="metodo" name="metodo"><br>
+	<label for="descripcion">Descripcion:</label><br>
+	<input type="text" id="descripcion" name="descripcion" value="-"><br>
+	<input type=hidden value="{{id}}" name="id"/>
+ 	<input type="submit" value="Crear" name="accion"/>
+{% endblock %}
