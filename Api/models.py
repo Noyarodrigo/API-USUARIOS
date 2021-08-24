@@ -27,6 +27,7 @@ class Facturas(db.Model):
     MetodoPago = db.Column(db.String(), nullable=False)
     Descripcion = db.Column(db.String(), nullable=False)
     ClienteID = db.Column(db.Integer(),db.ForeignKey('usuarios.ClienteID'))
+    Monto = db.Column(db.Float(45))
     cliente_id = db.relationship('Usuarios',foreign_keys=ClienteID, backref='Facturas')
     ProductoID = db.Column(db.Integer(),db.ForeignKey('productos.ProductoID'))
     producto_id = db.relationship('Productos',foreign_keys=ProductoID, backref='Facturas')

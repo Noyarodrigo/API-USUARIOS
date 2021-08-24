@@ -21,7 +21,6 @@ def usuarios():
 def user_handler():
     #csrf posible implementacion
     #r = requests.get('http://api:6000/product',cookies=token_dict, headers=token_dict['csrf_access_token'])
-
     token_dict = get_cookie()
     if request.method == 'GET':
         arg_data = request.args

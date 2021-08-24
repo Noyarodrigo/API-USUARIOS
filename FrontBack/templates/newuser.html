@@ -12,11 +12,13 @@
 	<input type="text" id="apellido" name="apellido"><br>
 	<label for="dirección">Dirección:</label><br>
 	<input type="text" id="direccion" name="direccion" value="-"><br>
+	<label for="producto">Servicio:</label><br>
 	<select name= producto method="GET" action="/product">
 	{% for opt in productos %}
 		<option value= "{{opt[1]}}" SELECTED>{{opt[0]}}</option>"
 	{% endfor %}
 	</select>
+	<br>
 	<label for="password">Contraseña:</label><br>
 	<input type="text" id="password" name="password"><br>
 	<label for="matricula">Matricula:</label><br>

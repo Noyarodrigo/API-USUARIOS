@@ -1,24 +1,28 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1 class="title">
-  Facturas
-</h1>
-<table>
+<div class="table-title">
+<h3>Registro de Pagos</h3>
+</div>
+<table class="table-fill">
+<thead>
 <tr>
-    <th>Fecha</th>
-    <th>Nombre</th>
-    <th>Monto</th>
-    <th>Metodo de pago</th>
-    <th>Descripción</th>
+    <th class="text-left">Fecha</th>
+    <th class="text-left">Nombre</th>
+    <th class="text-left">Monto</th>
+    <th class="text-left">Metodo</th>
+    <th class="text-left">Descripción</th>
+    <th class="text-left" colspan='2'>Acciones</th>
   </tr>
+</thead>
+<tbody class="table-hover">
 {% for elems in bills %}
 	<tr>
-	  <td>{{elems['FechaPago']}}</td>
-	  <td>{{elems['Nombre']}} {{elems['Apellido']}}</td>
-	  <td>{{elems['Monto']}}</td>
-	  <td>{{elems['MetodoPago']}}</td>
-	  <td>{{elems['Descripcion']}}</td>
+	  <td class="text-left">{{elems['FechaPago']}}</td>
+	  <td class="text-left">{{elems['Nombre']}} {{elems['Apellido']}}</td>
+	  <td class="text-left">{{elems['Monto']}}</td>
+	  <td class="text-left">{{elems['MetodoPago']}}</td>
+	  <td class="text-left">{{elems['Descripcion']}}</td>
 	  <td>
 	    <form action="{{url_for('main.facturas_handler')}}" method="GET">
 	      <input type=hidden value="_UPDATE" name="_method"/>
@@ -35,5 +39,6 @@
 	  </td>
 	</tr>
 {%endfor%}
+</tbody>
 </table>
 {% endblock %}

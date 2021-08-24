@@ -1,39 +1,44 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1 class="title">
-  Panel de Usuarios
-</h1>
+
+<div class="table-title">
+<h3>Panel de Usuarios</h3>
+</div>
 <form method="GET" action="{{url_for('main.user_handler')}}">
- 	<input type="submit" value="Nuevo Usuario" name="nusuario"/>
+ 	<input type="submit" value="Nuevo Usuario" name="nusuario" class="button1" />
 </form>
-<table>
+<table class="table-fill">
+<thead>
 <tr>
-    <th>Nombre</th>
-    <th>Apellido</th>
-    <th>Fecha de Pago</th>
-    <th>Direccion</th>
+    <th class="text-left">Nombre</th>
+    <th class="text-left">Apellido</th>
+    <th class="text-left">Fecha</th>
+    <th class="text-left">Direccion</th>
+    <th class="text-left" colspan='3'>Acciones</th>
   </tr>
+</thead>
+<tbody class="table-hover">
 {% for elems in usuarios %}
 	<tr>
-	  <td>{{elems['Nombre']}}</td>
-	  <td>{{elems['Apellido']}}</td>
-	  <td>{{elems['FechaPago']}}</td>
-	  <td>{{elems['Direccion']}}</td>
-	  <td>
+	  <td class="text-left">{{elems['Nombre']}}</td>
+	  <td class="text-left">{{elems['Apellido']}}</td>
+	  <td class="text-left">{{elems['FechaPago']}}</td>
+	  <td class="text-left">{{elems['Direccion']}}</td>
+	  <td class="text-left">
 	    <form action="{{url_for('main.facturas_handler')}}" method="GET">
 	      <input type=hidden value="{{elems['ID']}}" name="id"/>
 	      <button type="submit">Credito</button>
 	    </form>
 	  </td>
-	  <td>
+	  <td class="text-left">
 	    <form action="{{url_for('main.user_handler')}}" method="GET">
 	      <input type=hidden value="_UPDATE" name="_method"/>
 	      <input type=hidden value="{{elems['ID']}}" name="id"/>
 	      <button type="submit">Modificar</button>
 	    </form>
 	  </td>
-	  <td>
+	  <td class="text-left">
 	    <form action="{{url_for('main.user_handler')}}" method="GET">
 	      <input type=hidden value="_DELETE" name="_method"/>
 	      <input type=hidden value="{{elems['ID']}}" name="id"/>
@@ -42,5 +47,6 @@
 	  </td>
 	</tr>
 {%endfor%}
+</tbody>
 </table>
 {% endblock %}

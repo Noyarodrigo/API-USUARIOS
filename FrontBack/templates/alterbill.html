@@ -12,11 +12,6 @@
 	<input type="text" id="MetodoPago" name="MetodoPago" value= "{{data['MetodoPago']}}"><br>
 	<label for="Descripcion">Descripcion:</label><br>
 	<input type="text" id="Descripcion" name="Descripcion" value="{{data['Descripcion']}}"><br>
-	<select name= Producto method="GET" action="/product">
-	{% for opt in productos %}
-		<option value= "{{opt[1]}}" SELECTED>{{opt[0]}}</option>"
-	{% endfor %}
-	</select>
 	<input type=hidden value="{{id}}" name="id"/>
  	<input type="submit" value="Actualizar" name="accion"/>
 </form>

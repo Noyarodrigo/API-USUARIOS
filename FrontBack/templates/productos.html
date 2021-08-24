@@ -1,23 +1,27 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1 class="title">
-  Servicios
-</h1>
+<div class="table-title">
+<h3>Servicios</h3>
+</div>
 <form method="GET" action="{{url_for('main.servicios_handler')}}">
  	<input type="submit" value="Nuevo Servicio" name="nservicio"/>
 </form>
-<table>
+<table class="table-fill">
+<thead>
 <tr>
-    <th>Nombre</th>
-    <th>Descripcion</th>
-    <th>Monto</th>
+    <th class="text-left">Nombre</th>
+    <th class="text-left">Descripcion</th>
+    <th class="text-left">Monto</th>
+    <th class="text-left" colspan='2'>Acciones</th>
   </tr>
+</thead>
+<tbody class="table-hover">
 {% for elems in productos %}
 	<tr>
-	  <td>{{elems['Nombre']}}</td>
-	  <td>{{elems['Descripcion']}}</td>
-	  <td>{{elems['Monto']}}</td>
+	  <td class="text-left">{{elems['Nombre']}}</td>
+	  <td class="text-left">{{elems['Descripcion']}}</td>
+	  <td class="text-left">{{elems['Monto']}}</td>
 	  <td>
 	    <form action="{{url_for('main.servicios_handler')}}" method="GET">
 	      <input type=hidden value="_UPDATE" name="_method"/>
@@ -34,5 +38,6 @@
 	  </td>
 	</tr>
 {%endfor%}
+</tbody>
 </table>
 {% endblock %}

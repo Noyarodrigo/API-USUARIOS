@@ -9,6 +9,7 @@ from sqlalchemy.orm import sessionmaker
 from flask_jwt_extended import (
     JWTManager, jwt_required, get_jwt_identity)
 import json
+from datetime import datetime
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '2021secrete'
@@ -48,7 +49,11 @@ def get_all_users():
         user_data['Nombre'] = user.Nombre
         user_data['Apellido'] = user.Apellido
         user_data['Direccion'] = user.Direccion
-        user_data['FechaPago'] = user.FechaPago
+        try:
+            user_data['FechaPago'] = user.FechaPago.strftime("%Y/%m/%d")
+        except:
+            user_data['FechaPago'] = user.FechaPago
+
         output.append(user_data)
 
     return jsonify({'usuarios' : output})
@@ -72,7 +77,7 @@ def get_one_user(id):
     user_data['Direccion'] = user.Direccion
     user_data['Producto'] = user.Producto
     user_data['Matricula'] = user.Matricula
-    user_data['FechaPago'] = user.FechaPago
+    user_data['FechaPago'] = user.FechaPago.strftime("%Y/%m/%d")
     user_data['Password'] = user.Password
     return jsonify({'user':user_data})
 
@@ -153,9 +158,8 @@ def get_payment():
 def get_all_bills():
     #bills = Facturas.query.all()
 
-    bills = db.session.query(Facturas.FacturaID, Usuarios.ClienteID, Usuarios.Nombre, Usuarios.Apellido, Facturas.Descripcion,Facturas.MetodoPago,Facturas.FechaPago,Productos.Monto)\
+    bills = db.session.query(Facturas.FacturaID, Usuarios.ClienteID, Usuarios.Nombre, Usuarios.Apellido, Facturas.Descripcion,Facturas.MetodoPago,Facturas.FechaPago,Facturas.Monto)\
             .filter(Facturas.ClienteID == Usuarios.ClienteID)\
-            .filter(Productos.ProductoID == Usuarios.ProductoID)\
             .order_by(Facturas.FechaPago.desc())\
             .all()
     output = []
@@ -167,7 +171,7 @@ def get_all_bills():
         bill_data['Apellido'] = bill.Apellido
         bill_data['Descripcion'] = bill.Descripcion
         bill_data['MetodoPago'] = bill.MetodoPago
-        bill_data['FechaPago'] = bill.FechaPago
+        bill_data['FechaPago'] = bill.FechaPago.strftime("%Y/%m/%d")
         bill_data['Monto'] = bill.Monto
         output.append(bill_data)
     return jsonify({'bills' : output})
@@ -191,7 +195,7 @@ def get_one_bill(id):
     bill_data['Apellido'] = bill.Apellido
     bill_data['Descripcion'] = bill.Descripcion
     bill_data['MetodoPago'] = bill.MetodoPago
-    bill_data['FechaPago'] = bill.FechaPago
+    bill_data['FechaPago'] = bill.FechaPago.strftime("%Y/%m/%d")
     return jsonify({'bill':bill_data})
 
 #crear factura
@@ -204,7 +208,12 @@ def create_bill():
     if not user:
         return jsonify({'message':'No existe el usuario'})
 
-    new_bill = Facturas(ClienteID= data['id'], Descripcion= data['descripcion'], MetodoPago= data['metodo'], FechaPago=data['fecha'])
+    monto_producto = db.session.query(Productos.Monto)\
+            .filter(Productos.ProductoID == Usuarios.ProductoID)\
+            .filter(Usuarios.ClienteID==data['id'])\
+            .first()
+
+    new_bill = Facturas(ClienteID= data['id'], Descripcion= data['descripcion'], MetodoPago= data['metodo'], FechaPago=data['fecha'], Monto = monto_producto[0])
     db.session.add(new_bill)
     user.FechaPago = data['fecha']
     db.session.commit()
