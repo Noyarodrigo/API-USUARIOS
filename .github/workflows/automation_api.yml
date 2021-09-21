@@ -38,5 +38,7 @@ jobs:
         with:
           username: ${{secrets.DOCKER_USERNAME}}
           password: ${{secrets.DOCKER_PASSWORD}}
+          context: .
+          file: ./Dockerfile
           repository: roi96/gestion_usuario_api
           tags: latest, ${{ github.run_number}}
