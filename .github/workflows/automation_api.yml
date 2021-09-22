@@ -47,4 +47,4 @@ jobs:
           push: true
           context: ./Api/
           #tags: latest, ${{ github.run_number}}
-          tags: roi96/gestion_usuario_api:latest
+          tags: roi96/gestion_usuario_api:${{ github.run_number}}
