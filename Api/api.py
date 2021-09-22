@@ -35,7 +35,7 @@ jwt = JWTManager(app)
 
 from models import *
 
-#comentario para probar github actions
+#comentario para probar github actions v2
 
 #-------  API usuario -------
 #buscar todos los usuarios
