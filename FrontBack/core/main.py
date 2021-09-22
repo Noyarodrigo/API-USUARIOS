@@ -4,6 +4,8 @@ import requests, json
 
 main = Blueprint('main', __name__)
 
+#this is just a comment for testing ci
+
 @main.route('/')
 def index():
     return render_template('index.html')
