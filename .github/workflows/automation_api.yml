@@ -37,7 +37,7 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
-          repository: roi96/gestion_usuario_api
+          registry: roi96/gestion_usuario_api
           
       - name: Publish to DockerHub
         uses: docker/build-push-action@v2
