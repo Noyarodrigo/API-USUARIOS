@@ -4,7 +4,7 @@ import requests, json
 
 main = Blueprint('main', __name__)
 
-#this is just a comment for testing ci
+#this is just a comment for testing ci v2
 
 @main.route('/')
 def index():
