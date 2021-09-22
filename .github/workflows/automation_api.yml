@@ -34,7 +34,7 @@ jobs:
         with:
           username: ${{secrets.DOCKER_USERNAME}}
           password: ${{secrets.DOCKER_PASSWORD}}
-          context: ./Api/
-          push: true
           repository: roi96/gestion_usuario_api
+          context: ./Api/
           tags: latest, ${{ github.run_number}}
+          push: true
