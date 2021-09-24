@@ -13,7 +13,7 @@ from datetime import datetime
 
 app = Flask(__name__)
 db = SQLAlchemy(app)
-app.config.from_pyfile('config.txt')
+app.config.from_pyfile('/config/config.txt')
 jwt = JWTManager(app)
 
 from models import *

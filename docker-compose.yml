@@ -30,10 +30,11 @@ services:
     ports:
       - "5000:5000"
 
-  nginx:
-    container_name: nginx
+  lb:
+    image: roi96/gestion_usuario_nginx:1
+    container_name: lb
     restart: always
-    build: ./nginx
+    #build: ./nginx
     networks:
       - apinetwork
     ports:
