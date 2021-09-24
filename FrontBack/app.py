@@ -17,7 +17,7 @@ from flask_jwt_extended import (
 
 app = Flask(__name__)
 db.init_app(app)
-app.config.from_pyfile('/config/config.txt')
+app.config.from_pyfile('/app/src/config/config.txt')
 jwt = JWTManager(app)
 
 # blueprint for auth routes in our app
