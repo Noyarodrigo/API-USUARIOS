@@ -1,4 +1,5 @@
 *.pyc
+*.txt
 flask-mysql-env/
 tests/
 tests

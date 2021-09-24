@@ -17,22 +17,7 @@ from flask_jwt_extended import (
 
 app = Flask(__name__)
 db.init_app(app)
-app.config['SECRET_KEY'] = '2021secrete'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root@db/Clientes'
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root@localhost/Clientes'
-app.config['SQLALCHEMY_TRACK_MODIFICATION'] = False
-# Configure application to store JWTs in cookies
-app.config['JWT_TOKEN_LOCATION'] = ['cookies']
-# Only allow JWT cookies to be sent over https. In production, this
-# should likely be True
-app.config['JWT_COOKIE_SECURE'] = False
-app.config['JWT_COOKIE_CSRF_PROTECT'] = True
-app.config['JWT_ACCESS_COOKIE_PATH'] = '/api'
-app.config['JWT_REFRESH_COOKIE_PATH'] = '/token/refresh'
-app.config['JWT_COOKIE_CSRF_PROTECT'] = True
-app.config['JWT_CSRF_IN_COOKIES'] = True
-app.config['JWT_SECRET_KEY'] = '2021secrete'  # Change this!
-
+app.config.from_pyfile('config.txt')
 jwt = JWTManager(app)
 
 # blueprint for auth routes in our app

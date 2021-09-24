@@ -12,30 +12,11 @@ import json
 from datetime import datetime
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = '2021secrete'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root@db/Clientes'
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root@localhost/Clientes'
-app.config['SQLALCHEMY_TRACK_MODIFICATION'] = False
-
 db = SQLAlchemy(app)
-
-# Configure application to store JWTs in cookies
-app.config['JWT_TOKEN_LOCATION'] = ['cookies']
-# Only allow JWT cookies to be sent over https. In production, this
-# should likely be True
-app.config['JWT_COOKIE_SECURE'] = False
-app.config['JWT_COOKIE_CSRF_PROTECT'] = False
-app.config['JWT_ACCESS_COOKIE_PATH'] = '/api:6000/'
-app.config['JWT_REFRESH_COOKIE_PATH'] = '/token/refresh'
-app.config['JWT_CSRF_IN_COOKIES'] = False
-app.config['JWT_SECRET_KEY'] = '2021secrete'  # Change this!
-
+app.config.from_pyfile('config.txt')
 jwt = JWTManager(app)
 
-
 from models import *
-
-#comentario para probar github actions v6
 
 #-------  API usuario -------
 #buscar todos los usuarios
