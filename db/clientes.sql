@@ -42,6 +42,7 @@ CREATE TABLE `facturas` (
   `ClienteID` int(11) DEFAULT NULL,
   `Descripcion` varchar(100) DEFAULT NULL,
   `MetodoPago` varchar(45) DEFAULT NULL,
+  `Monto` float DEFAULT NULL,
   `FechaPago` date NOT NULL,
   `ProductoID` int(11) DEFAULT NULL,
   PRIMARY KEY (`FacturaID`),
