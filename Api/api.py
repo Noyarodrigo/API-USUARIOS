@@ -319,6 +319,7 @@ def login_app():
     key = app.config['API_KEY']
     fernet = Fernet(key)
     api_key = request.headers['api-key']
+    return jsonify({'key':key , 'api_key':api_key})
     matricula = fernet.decrypt(api_key).decode()
 
     if not matricula:
