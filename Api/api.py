@@ -10,7 +10,7 @@ from flask_jwt_extended import (
 import json
 from datetime import date, datetime
 from cryptography.fernet import Fernet
-import dateutil
+from dateutil import parser, relativedelta
 
 app = Flask(__name__)
 db = SQLAlchemy(app)
