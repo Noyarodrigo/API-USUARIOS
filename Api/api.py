@@ -327,8 +327,8 @@ def login_app():
 
     user = Usuarios.query.filter_by(Matricula=matricula).first()
 
-    a_month = dateutil.relativedelta.relativedelta(months=1)
-    pay_date = dateutil.parser.parse(user.FechaPago).date()
+    a_month = relativedelta.relativedelta(months=1)
+    pay_date = parser.parse(user.FechaPago).date()
 
     expiration = pay_date + a_month
     current = datetime.date(datetime.now())
