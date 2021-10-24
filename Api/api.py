@@ -316,7 +316,7 @@ def delete_product(id):
 #-------- API login/app ------
 @app.route('/app/login', methods=['POST'])
 def login_app():
-    key = app.config['API_KEY'].encode()
+    key = app.config['API_KEY']
     fernet = Fernet(key)
     api_key = request.headers['api-key']
     #return jsonify({'key':str(key.decode()), 'api_key':api_key})
