@@ -329,7 +329,7 @@ def login_app():
 
     a_month = relativedelta.relativedelta(months=1)
     #pay_date = parser.parse(user.FechaPago).date()
-    pay_date = user.FechaPago
+    pay_date = datetime.date(user.FechaPago)
 
     expiration = pay_date + a_month
     current = datetime.date(datetime.now())
