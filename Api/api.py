@@ -318,7 +318,7 @@ def delete_product(id):
 def login_app():
     key = app.config['API_KEY']
     fernet = Fernet(key)
-    api_key = request.headers['api-key']
+    api_key = encode(request.headers['api-key'])
     #return jsonify({'key':str(key.decode()), 'api_key':api_key})
     matricula = fernet.decrypt(api_key)#.decode()
 
