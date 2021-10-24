@@ -3,12 +3,12 @@ version: '3'
 services:
 
   api:
-    image: roi96/gestion_usuario_api
+    #image: roi96/gestion_usuario_api
     environment:
       FLASK_APP: app
     container_name: api
     restart: unless-stopped
-    #build: ./Api
+    build: ./Api
     volumes:
       - ./Api:/app/src
     networks:
@@ -17,12 +17,12 @@ services:
       - "6000:6000"
 
   front:
-    image: roi96/gestion_usuario_front:2
+    #image: roi96/gestion_usuario_front:2
     environment:
       FLASK_APP: app
     container_name: front
     restart: unless-stopped
-    #build: ./FrontBack
+    build: ./FrontBack
     volumes:
       - ./FrontBack:/app/src
     networks:
@@ -31,10 +31,10 @@ services:
       - "5000:5000"
 
   lb:
-    image: roi96/gestion_usuario_nginx:1
+    #image: roi96/gestion_usuario_nginx:1
     container_name: lb
     restart: always
-    #build: ./nginx
+    build: ./nginx
     networks:
       - apinetwork
     ports:
