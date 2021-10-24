@@ -316,11 +316,11 @@ def delete_product(id):
 #-------- API login/app ------
 @app.route('/app/login', methods=['POST'])
 def login_app():
-    key = app.config['API_KEY']
+    key = app.config['API_KEY'].encode()
     fernet = Fernet(key)
     api_key = request.headers['api-key']
-    return jsonify({'key':str(key.decode()), 'api_key':api_key})
-    matricula = fernet.decrypt(api_key).decode()
+    #return jsonify({'key':str(key.decode()), 'api_key':api_key})
+    matricula = fernet.decrypt(api_key)#.decode()
 
     if not matricula:
         return jsonify({'message':'Error en la matricula'})
