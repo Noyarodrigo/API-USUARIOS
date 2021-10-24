@@ -3,13 +3,14 @@ from flask import Flask, request, jsonify, make_response, url_for
 from flask_sqlalchemy import SQLAlchemy
 import uuid
 from werkzeug.security import generate_password_hash, check_password_hash
-import datetime
 from functools import wraps
 from sqlalchemy.orm import sessionmaker
 from flask_jwt_extended import (
     JWTManager, jwt_required, get_jwt_identity)
 import json
-from datetime import datetime
+from datetime import date, datetime
+from cryptography.fernet import Fernet
+import dateutil
 
 app = Flask(__name__)
 db = SQLAlchemy(app)
@@ -311,6 +312,31 @@ def delete_product(id):
     db.session.delete(product)
     db.session.commit()
     return jsonify({'message':'Producto eliminado'})
+
+#-------- API login/app ------
+@auth.route('/app/login', methods=['POST'])
+def login_app():
+    key = app.config['API_KEY']
+    fernet = Fernet(key)
+    api_key = request.headers('api-key')
+    matricula = fernet.decrypt(api_key).decode()
+
+    if not matricula:
+        return jsonify({'message':'Error en la matricula'})
+
+    user = Usuarios.query.filter_by(Matricula=matricula).first()
+
+    a_month = dateutil.relativedelta.relativedelta(months=1)
+    pay_date = dateutil.parser.parse(user.FechaPago).date()
+
+    expiration = pay_date + a_month
+    current = datetime.date(datetime.now())
+
+    if current > expiration:
+        return jsonify({'message':'Servicio no abonado'})
+
+    return jsonify({'status':'True', 'matricula':user.Matricula})
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=os.getenv('PORT'),debug=True)
