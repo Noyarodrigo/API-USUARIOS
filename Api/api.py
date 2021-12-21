@@ -339,6 +339,5 @@ def login_app():
 
     return jsonify({'status':'True', 'matricula':user.Matricula})
 
-
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=os.getenv('PORT'),debug=True)
