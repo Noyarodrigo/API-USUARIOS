@@ -335,9 +335,9 @@ def login_app():
     current = datetime.date(datetime.now())
 
     if current > expiration:
-        return jsonify({'message':'Servicio no abonado'})
+        return jsonify({'status':False})
 
-    return jsonify({'status':'True', 'matricula':user.Matricula})
+    return jsonify({'status':True, 'matricula':user.Matricula})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=os.getenv('PORT'),debug=True)
