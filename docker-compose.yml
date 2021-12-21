@@ -38,7 +38,7 @@ services:
     networks:
       - apinetwork
     ports:
-      - "8000:8080"
+      - "80:80"
 
   db:
     image: mariadb
