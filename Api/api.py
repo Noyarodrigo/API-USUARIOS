@@ -326,6 +326,8 @@ def login_app():
         return jsonify({'message':'Error en la matricula'})
 
     user = Usuarios.query.filter_by(Matricula=matricula).first()
+    if not user:
+        return jsonify({'message':'Matricula no encontrada'})
 
     a_month = relativedelta.relativedelta(months=1)
     #pay_date = parser.parse(user.FechaPago).date()
