@@ -42,6 +42,7 @@ def login_post():
     resp.set_cookie(key='access_token', value=access_token, httponly = True)
     return resp
 
+
 """
 @auth.route('/token/refresh', methods=['POST'])
 #@jwt_refresh_token_required

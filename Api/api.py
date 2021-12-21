@@ -112,29 +112,6 @@ def delete_user(id):
     db.session.commit()
     return jsonify({'message':'Usuario eliminado'})
 
-#-------  API pago/login -------
-#buscar fecha pago
-@app.route('/login',methods=['POST'])
-@jwt_required()
-def get_payment():
-    data = request.get_json()
-
-    user = Usuarios.query.filter_by(Matricula=data['Matricula']).first()
-
-    if not user:
-        return jsonify({'message':'No existe el usuario'})
-
-    if 'Nombre' not in data or 'Apellido' not in data or 'Matricula' not in data:
-        return make_response('No se pudo verificar', 401, {'WWW-Authenticate' : 'Basic realm="Login required!"'})
-
-    if user.Nombre != data['Nombre'] or user.Apellido != data['Apellido']:
-        return make_response('No se pudo verificar', 401, {'WWW-Authenticate' : 'Basic realm="Login required!"'})
-
-    user_data = {}
-    user_data['FechaPago'] = user.FechaPago
-    user_data['Matricula'] = user.Matricula
-    return jsonify({'user':user_data})
-
 #-------  API factura -------
 #buscar todas las factuas
 @app.route('/factura',methods=['GET'])

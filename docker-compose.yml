@@ -13,8 +13,8 @@ services:
       - ./Api:/app/src
     networks:
       - apinetwork
-    ports:
-      - "6000:6000"
+    #ports:
+    #  - "6000:6000"
 
   front:
     #image: roi96/gestion_usuario_front:2
@@ -27,8 +27,8 @@ services:
       - ./FrontBack:/app/src
     networks:
       - apinetwork
-    ports:
-      - "5000:5000"
+    #ports:
+    #  - "5000:5000"
 
   lb:
     #image: roi96/gestion_usuario_nginx:1
